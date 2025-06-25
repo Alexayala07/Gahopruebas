@@ -27,16 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   beforeCapture.insertBefore(switchCameraBtn, captureBtn);
 
-  // Cuadro para mostrar el tipo de documento detectado
-  let infoTipoDoc = document.getElementById("tipoDocumentoDetectado");
-  if (!infoTipoDoc) {
-    infoTipoDoc = document.createElement("p");
-    infoTipoDoc.id = "tipoDocumentoDetectado";
-    infoTipoDoc.style.marginTop = "0.5rem";
-    infoTipoDoc.style.fontWeight = "600";
-    preview.insertBefore(infoTipoDoc, capturedImage);
-  }
-
   // Cargar documentos previos si los hay
   const scannedDocs = JSON.parse(localStorage.getItem("scannedDocsEmpresa") || "{}");
 
@@ -77,23 +67,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   captureBtn.addEventListener("click", () => {
-  const canvas = document.createElement("canvas");
-  canvas.width = camera.videoWidth;
-  canvas.height = camera.videoHeight;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
-  const dataUrl = canvas.toDataURL("image/jpeg");
-  capturedImage.src = dataUrl;
+    const canvas = document.createElement("canvas");
+    canvas.width = camera.videoWidth;
+    canvas.height = camera.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/jpeg");
+    capturedImage.src = dataUrl;
 
-  // Aquí estimamos el tamaño y actualizamos el texto
-  const tamañoEstimado = estimarTamañoDocumento(canvas.width, canvas.height);
-  document.getElementById('tipoDocumentoDetectado').textContent = `Tamaño estimado: ${tamañoEstimado}`;
-
-  preview.style.display = "block";
-  camera.style.display = "none";
-  beforeCapture.style.display = "none";
-  afterCapture.style.display = "flex";
-});
+    preview.style.display = "block";
+    camera.style.display = "none";
+    beforeCapture.style.display = "none";
+    afterCapture.style.display = "flex";
+  });
 
   retakeBtn.addEventListener("click", () => {
     preview.style.display = "none";
@@ -103,38 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   acceptBtn.addEventListener("click", async () => {
-  const file = await fetch(capturedImage.src)
-    .then(res => res.blob())
-    .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
+    const file = await fetch(capturedImage.src)
+      .then(res => res.blob())
+      .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
 
-  filestackClient.upload(file).then(result => {
-    // ⚡ URL con transformación automática tipo escáner
-    const scannedUrl = `https://cdn.filestackcontent.com/resize=width:1000,fit:max/enhance=contrast:2.0/blackwhite/sharpen/${result.handle}`;
-
-    const img = document.createElement("img");
-    img.src = scannedUrl;
-    img.alt = `Documento: ${currentDocType}`;
-    img.classList.add("final-preview-img");
-
-    const docItem = document.querySelector(`.document-item[data-doc="${currentDocType}"]`);
-    if (docItem) {
-      const previewContainer = docItem.querySelector(".doc-preview");
-      const statusIcon = docItem.querySelector(".status-icon");
-
-      previewContainer.innerHTML = "";
-      previewContainer.appendChild(img);
-      statusIcon.textContent = "✅";
-    }
-
-    // Guardar en localStorage
-    scannedDocs[currentDocType] = scannedUrl;
-    localStorage.setItem("scannedDocsEmpresa", JSON.stringify(scannedDocs));
-    localStorage.setItem("origen", "documentacion-empresa.html");
-
-    closeScanner();
-  }).catch(err => {
-    alert("Error al subir el archivo a Filestack");
-    console.error(err);
+    filestackClient.upload(file).then(result => {
+      const fileUrl = result.url;
 
       const img = document.createElement("img");
       img.src = fileUrl;
@@ -151,8 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
         statusIcon.textContent = "✅";
       }
 
+      // Guardar en localStorage
       scannedDocs[currentDocType] = fileUrl;
       localStorage.setItem("scannedDocsEmpresa", JSON.stringify(scannedDocs));
+
+      // Guardar origen actual
       localStorage.setItem("origen", "documentacion-empresa.html");
 
       closeScanner();
@@ -174,16 +137,4 @@ document.addEventListener("DOMContentLoaded", () => {
     beforeCapture.style.display = "flex";
     afterCapture.style.display = "none";
   }
-
-  function estimarTamañoDocumento(ancho, alto) {
-  // Razón ancho/alto aproximada para tamaños comunes
-  const ratio = ancho / alto;
-
-  // Valores aproximados (puedes ajustar según prueba)
-  if (ratio > 0.7 && ratio < 0.8) return "Carta";
-  if (ratio > 0.6 && ratio < 0.7) return "Oficio";
-  if (ratio > 1.3 && ratio < 1.5) return "Credencial";
-  return "Desconocido";
-}
-
 });
