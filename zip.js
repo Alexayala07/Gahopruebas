@@ -11,9 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputNombreManual = document.getElementById("nombreManual");
 
   const origen = localStorage.getItem("origen") || "documentacion-general.html";
-  const imagenes = JSON.parse(localStorage.getItem(
-    origen.includes("empresa") ? "scannedDocsEmpresa" : "scannedDocsGeneral"
-  ) || "{}");
+  const docsEmpresa = JSON.parse(localStorage.getItem("scannedDocsEmpresa") || "{}");
+  const docsGeneral = JSON.parse(localStorage.getItem("scannedDocsGeneral") || "{}");
+  const imagenes = Object.keys(docsEmpresa).length > 0 ? docsEmpresa : docsGeneral;
+
 
   const posiblesDocs = ["ine_frente", "curp", "contrato_laboral", "carta_responsiva"];
   let zipBlob = null;
