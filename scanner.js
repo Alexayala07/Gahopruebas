@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentDocType  = "";
   let usandoFrontal   = false;
 
-  const filestackClient = filestack.init("A7II0wXa7TKix1YxL3cCRz");
+  const filestackClient = filestack.init("A7II0wXa7TKix1YxL3cCRz"); // tu API key Filestack
 
   /* ---------- BOTÓN CAMBIAR CÁMARA ---------- */
   const switchCameraBtn = document.createElement("button");
@@ -71,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- FUNCION PARA ACTUALIZAR TEXTO DEL TIPO DOCUMENTO ---------- */
   function actualizarTipoDocDetectado(texto) {
     const docItem = document.querySelector(`.document-item[data-doc="${currentDocType}"]`);
     if (!docItem) return;
@@ -82,8 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- CAPTURAR FOTO ---------- */
   captureBtn.addEventListener("click", () => {
-
-    /* --- Canvas original --- */
     const canvas = document.createElement("canvas");
     canvas.width  = camera.videoWidth;
     canvas.height = camera.videoHeight;
@@ -91,11 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
     const aspectRatio = canvas.width / canvas.height;
 
-    /* --- Detectar tamaño por relación de aspecto --- */
     const tipoDetectado = detectDocType(aspectRatio);
     actualizarTipoDocDetectado(`Tamaño estimado: ${tipoDetectado}`);
 
-    /* --- Canvas procesado (efecto escáner) --- */
     const scanCanvas = document.createElement("canvas");
     scanCanvas.width  = canvas.width;
     scanCanvas.height = canvas.height;
@@ -103,17 +98,16 @@ document.addEventListener("DOMContentLoaded", () => {
     sctx.filter = "grayscale(100%) contrast(140%) brightness(115%)";
     sctx.drawImage(canvas, 0, 0);
 
-    /* --- DataURL resultante con efecto escáner --- */
     const processedUrl = scanCanvas.toDataURL("image/jpeg", 0.9);
+    capturedImage.src = processedUrl;
 
-    capturedImage.src = processedUrl;            // mostramos la mejorada
     preview.style.display          = "block";
     camera.style.display           = "none";
     beforeCapture.style.display    = "none";
     afterCapture.style.display     = "flex";
   });
 
-  /* ---------- BOTÓN “VOLVER A TOMAR” ---------- */
+  /* ---------- VOLVER A TOMAR ---------- */
   retakeBtn.addEventListener("click", () => {
     preview.style.display       = "none";
     camera.style.display        = "block";
@@ -121,19 +115,18 @@ document.addEventListener("DOMContentLoaded", () => {
     afterCapture.style.display  = "none";
   });
 
-  /* ---------- BOTÓN “ACEPTAR” ---------- */
+  /* ---------- ACEPTAR ---------- */
   acceptBtn.addEventListener("click", async () => {
-    /* El `capturedImage.src` ya contiene la versión procesada */
     const file = await fetch(capturedImage.src)
       .then(r => r.blob())
       .then(b => new File([b], `${currentDocType}.jpg`, { type: "image/jpeg" }));
 
     filestackClient.upload(file).then(async res => {
-      const fileUrl = res.url;
+      // ✅ Aplicamos transformación adicional (tipo escáner profesional vía CDN)
+      const scannedUrl = `https://cdn.filestackcontent.com/resize=width:1000,fit:max/enhance=contrast:2.0/blackwhite/sharpen/${res.handle}`;
 
-      /* Pre-visualización */
       const img = document.createElement("img");
-      img.src = fileUrl;
+      img.src = scannedUrl;
       img.alt = `Documento: ${currentDocType}`;
       img.classList.add("final-preview-img");
 
@@ -144,8 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         docItem.querySelector(".status-icon").textContent = "✅";
       }
 
-      /* Guardar y marcar origen */
-      scannedDocs[currentDocType] = fileUrl;
+      scannedDocs[currentDocType] = scannedUrl;
       localStorage.setItem("scannedDocsGeneral", JSON.stringify(scannedDocs));
       localStorage.setItem("origen", "documentacion-general.html");
 
@@ -156,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* ---------- BOTÓN “CANCELAR” ---------- */
+  /* ---------- CANCELAR ---------- */
   cancelScanBtn.addEventListener("click", closeScanner);
 
   function closeScanner() {
@@ -168,8 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
     afterCapture.style.display     = "none";
   }
 
-  /* ---------- UTILIDADES ---------- */
-  function detectDocType(r) { // r = aspectRatio
+  /* ---------- DETECTAR TIPO DE DOCUMENTO POR ASPECT RATIO ---------- */
+  function detectDocType(r) {
     if (r >= 0.74 && r <= 0.81)     return "Carta (8.5×11″)";
     if (r >= 0.60 && r < 0.74)      return "Oficio / Legal (8.5×13″)";
     if (r >= 1.50 && r <= 1.70)     return "Credencial (INE/ID)";
