@@ -103,12 +103,38 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   acceptBtn.addEventListener("click", async () => {
-    const file = await fetch(capturedImage.src)
-      .then(res => res.blob())
-      .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
+  const file = await fetch(capturedImage.src)
+    .then(res => res.blob())
+    .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
 
-    filestackClient.upload(file).then(result => {
-      const fileUrl = result.url;
+  filestackClient.upload(file).then(result => {
+    // ⚡ URL con transformación automática tipo escáner
+    const scannedUrl = `https://cdn.filestackcontent.com/resize=width:1000,fit:max/enhance=contrast:2.0/blackwhite/sharpen/${result.handle}`;
+
+    const img = document.createElement("img");
+    img.src = scannedUrl;
+    img.alt = `Documento: ${currentDocType}`;
+    img.classList.add("final-preview-img");
+
+    const docItem = document.querySelector(`.document-item[data-doc="${currentDocType}"]`);
+    if (docItem) {
+      const previewContainer = docItem.querySelector(".doc-preview");
+      const statusIcon = docItem.querySelector(".status-icon");
+
+      previewContainer.innerHTML = "";
+      previewContainer.appendChild(img);
+      statusIcon.textContent = "✅";
+    }
+
+    // Guardar en localStorage
+    scannedDocs[currentDocType] = scannedUrl;
+    localStorage.setItem("scannedDocsEmpresa", JSON.stringify(scannedDocs));
+    localStorage.setItem("origen", "documentacion-empresa.html");
+
+    closeScanner();
+  }).catch(err => {
+    alert("Error al subir el archivo a Filestack");
+    console.error(err);
 
       const img = document.createElement("img");
       img.src = fileUrl;
