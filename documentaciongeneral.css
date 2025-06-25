@@ -1,0 +1,386 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  margin: 0;
+  background: #f7f7f7;
+}
+
+header {
+  background-color: #003366;
+  color: white;
+  padding: 1em;
+  border-radius: 10px;
+}
+
+ul.document-list {
+  list-style: none;
+  padding: 0;
+}
+
+ul.document-list li {
+  background: white;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scan-btn {
+  background: #0055aa;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.scan-btn:hover {
+  background: #003f7d;
+}
+
+#scanner-container {
+  margin-top: 20px;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+#preview img {
+  margin-top: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 600px) {
+  ul.document-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .scan-btn {
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+.btn-regresar {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-regresar:hover {
+  background-color: #45a049;
+}
+
+.btn-siguiente {
+  background-color: #2196F3;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-siguiente:hover {
+  background-color: #1976D2;
+}
+.document-scroll {
+  max-height: 400px; /* Puedes ajustar esta altura */
+  overflow-y: auto;
+  padding-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.document-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.document-list li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+ #scanner-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-camera {
+  background-color: #1e1e1e;
+  padding: 1rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: black;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+video#camera {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay-frame {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+  border: 2px dashed #888;
+  border-radius: 8px;
+  z-index: 2;
+}
+
+.overlay-text {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ccc;
+  font-size: 0.9rem;
+  background-color: #1e1e1e;
+  padding: 0 6px;
+}
+
+#loading-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1rem;
+  z-index: 3;
+}
+/* Asegúrate de que el footer no tenga margen que lo empuje arriba */
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #f3f3f3;
+  font-size: 14px;
+  color: #555;
+  margin-top: auto;
+}
+.scanner-buttons {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.btn-cancel, .btn-capture {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #ccc;
+  color: black;
+}
+
+.btn-capture {
+  background-color: #28a745;
+  color: white;
+}
+
+.preview-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-retake, .btn-accept {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-retake {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-accept {
+  background-color: #007bff;
+  color: white;
+}
+.btn-switch {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+#preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#capturedImage {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* Botones de vista previa (volver a escanear y aceptar) */
+.preview-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.preview-buttons button {
+  width: 90%;
+  max-width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-retake {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-accept {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Responsive mejora en horizontal */
+@media (min-width: 600px) {
+  .preview-buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .preview-buttons button {
+    width: 150px;
+  }
+}
+.scanner-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+#beforeCapture, #afterCapture {
+  display: flex;
+  gap: 10px;
+}
+
+#preview img {
+  max-width: 100%;
+  max-height: 300px;
+  margin-top: 15px;
+  border-radius: 8px;
+}
+.document-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.doc-label {
+  font-weight: bold;
+}
+
+.status-icon {
+  font-size: 20px;
+  color: green;
+  margin-left: 10px;
+}
+
+.doc-preview img {
+  max-width: 200px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+.document-list {
+  list-style: none;
+  padding: 0;
+}
+
+.document-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+  flex-wrap: wrap;
+}
+
+.doc-name {
+  font-weight: 500;
+  flex: 1;
+}
+
+.right-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-icon {
+  font-size: 20px;
+}
+
+.doc-preview {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.doc-preview img {
+  max-width: 100%;
+  border-radius: 8px;
+}

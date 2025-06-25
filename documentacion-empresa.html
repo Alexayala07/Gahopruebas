@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documentación De La Empresa</title>
+  <link rel="stylesheet" href="documentaciongeneral.css" />
+  <link rel="icon" type="image/png" href="icons8-document-94.png" />
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <h1>Documentación Empresa</h1>
+    <p>Paso 1: Escanear Documentación Empresa</p>
+    <p>Haga clic en "Escanear" para cada documento. Se abrirá la cámara para capturar la imagen. Luego podrá revisar las imágenes capturadas en el visor.</p>
+  </header>
+
+  <div class="document-scroll">
+    <ul class="document-list">
+      <li class="document-item" data-doc="permiso_tutor">
+        <span class="doc-name">Permiso firmado por tutor</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="permiso_tutor">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="identificacion_tutor">
+        <span class="doc-name">Identificación oficial tutor</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="identificacion_tutor">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="carta_responsiva">
+        <span class="doc-name">Carta responsiva</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="carta_responsiva">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="politicas_empresa">
+        <span class="doc-name">Políticas de la empresa</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="politicas_empresa">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="politicas_propina">
+        <span class="doc-name">Políticas de propina</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="politicas_propina">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="convenio_manipulaciones">
+        <span class="doc-name">Convenio de manipulaciones</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="convenio_manipulaciones">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="convenio_correo">
+        <span class="doc-name">Convenio de correo electrónico</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="convenio_correo">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="vale_uniforme">
+        <span class="doc-name">Vale de uniforme</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="vale_uniforme">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="apertura_cuentas">
+        <span class="doc-name">Apertura de cuentas</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="apertura_cuentas">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="contrato_laboral">
+        <span class="doc-name">Contrato laboral</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="contrato_laboral">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="responsiva_nomina">
+        <span class="doc-name">Responsiva tarjeta de nómina</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="responsiva_nomina">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+
+      <li class="document-item" data-doc="cuenta_santander">
+        <span class="doc-name">Cuenta Santander</span>
+        <div class="right-actions">
+          <button class="scan-btn" data-doc="cuenta_santander">Escanear</button>
+          <span class="status-icon">❌</span>
+        </div>
+        <div class="doc-preview"></div>
+      </li>
+    </ul>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin: 20px;">
+    <button onclick="window.location.href='dashboard.html'" class="btn-regresar">← Regresar al inicio</button>
+    <button id="siguienteBtn" class="btn-siguiente">Siguiente →</button>
+  </div>
+
+  <!-- Script para botón siguiente -->
+  <script>
+    document.getElementById("siguienteBtn").addEventListener("click", () => {
+      window.location.href = "generar-zip.html";
+    });
+  </script>
+
+  <!-- Scanner modal -->
+  <div id="scanner-container" style="display: none;">
+    <div class="modal-camera">
+      <div class="video-container">
+        <div class="overlay-frame">
+          <span class="overlay-text">Alinear documento aquí</span>
+        </div>
+        <video id="camera" autoplay playsinline></video>
+        <div id="loading-message">Cargando video...</div>
+      </div>
+      <div class="scanner-buttons">
+        <div id="beforeCapture">
+          <button id="cancelScanBtn" class="btn-cancel">Cancelar</button>
+          <button id="captureBtn" class="btn-capture">📸 Tomar Foto</button>
+        </div>
+        <div id="afterCapture" style="display: none;">
+          <button class="btn-retake" id="retakeBtn">Volver a escanear</button>
+          <button class="btn-accept" id="acceptBtn">Aceptar</button>
+        </div>
+      </div>
+      <div id="preview" style="display: none;">
+        <p id="tipoDocumentoDetectado" style="font-weight:600; margin-top:0.5rem;"></p>
+        <img id="capturedImage" alt="Documento escaneado" />
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Great American Hospitality. Todos los derechos reservados.
+  </footer>
+
+  <!-- Scripts -->
+  <script src="//static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
+  <script src="scannerempresa.js"></script>
+</body>
+</html>
