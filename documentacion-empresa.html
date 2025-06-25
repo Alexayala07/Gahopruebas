@@ -6,6 +6,8 @@
   <title>Documentación De La Empresa</title>
   <link rel="stylesheet" href="documentaciongeneral.css" />
   <link rel="icon" type="image/png" href="icons8-document-94.png" />
+  <link  href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet"/>
+
 </head>
 <body>
   <!-- Encabezado -->
@@ -140,31 +142,32 @@
   </script>
 
   <!-- Scanner modal -->
-  <div id="scanner-container" style="display: none;">
-    <div class="modal-camera">
-      <div class="video-container">
-        <div class="overlay-frame">
-          <span class="overlay-text">Alinear documento aquí</span>
-        </div>
-        <video id="camera" autoplay playsinline></video>
-        <div id="loading-message">Cargando video...</div>
+  <!-- Modal o contenedor para escaneo y recorte -->
+<div id="scanner-container" style="display: none;">
+  <div class="modal-camera">
+    <div class="video-container">
+      <div class="overlay-frame">
+        <span class="overlay-text">Alinear documento aquí</span>
       </div>
-      <div class="scanner-buttons">
-        <div id="beforeCapture">
-          <button id="cancelScanBtn" class="btn-cancel">Cancelar</button>
-          <button id="captureBtn" class="btn-capture">📸 Tomar Foto</button>
-        </div>
-        <div id="afterCapture" style="display: none;">
-          <button class="btn-retake" id="retakeBtn">Volver a escanear</button>
-          <button class="btn-accept" id="acceptBtn">Aceptar</button>
-        </div>
+      <video id="camera" autoplay playsinline></video>
+      <div id="loading-message">Cargando video...</div>
+    </div>
+    <div class="scanner-buttons">
+      <div id="beforeCapture">
+        <button id="cancelScanBtn" class="btn-cancel">Cancelar</button>
+        <button id="captureBtn" class="btn-capture">📸 Tomar Foto</button>
       </div>
-      <div id="preview" style="display: none;">
-        <p id="tipoDocumentoDetectado" style="font-weight:600; margin-top:0.5rem;"></p>
-        <img id="capturedImage" alt="Documento escaneado" />
+      <div id="afterCapture" style="display: none;">
+        <button class="btn-retake" id="retakeBtn">Volver a escanear</button>
+        <button class="btn-accept" id="acceptBtn">Aceptar</button>
       </div>
     </div>
+    <div id="preview" style="display: none;">
+      <img id="capturedImage" alt="Documento escaneado" style="max-width: 100%;"/>
+    </div>
   </div>
+</div>
+
 
   <footer>
     © 2025 Great American Hospitality. Todos los derechos reservados.
@@ -173,5 +176,7 @@
   <!-- Scripts -->
   <script src="//static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
   <script src="scannerempresa.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
 </body>
 </html>
