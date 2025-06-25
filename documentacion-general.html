@@ -6,8 +6,6 @@
   <title>Documentación General</title>
   <link rel="stylesheet" href="documentaciongeneral.css">
     <link rel="icon" type="image/png" href="icons8-document-94.png">
-    <link  href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet"/>
-
 </head>
 <body>
 
@@ -30,7 +28,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="solicitud_empleo">
@@ -40,7 +37,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="acta_nacimiento">
@@ -50,7 +46,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="imss">
@@ -60,7 +55,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="curp">
@@ -70,7 +64,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="estudios">
@@ -80,7 +73,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="domicilio">
@@ -90,7 +82,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="ine_frente">
@@ -100,9 +91,7 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
-
 
     <li class="document-item" data-doc="ine_reverso">
       <span class="doc-name">Credencial de elector (Reverso)</span>
@@ -111,7 +100,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="guia_entrevista">
@@ -121,7 +109,6 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
 
     <li class="document-item" data-doc="carta_identidad">
@@ -131,19 +118,16 @@
         <span class="status-icon">❌</span>
       </div>
       <div class="doc-preview"></div>
-      <p class="tipo-doc-detectado" style="font-weight:600; margin-top:0.5rem;"></p>
     </li>
     </div>
 
   </ul>
-
 <!-- Botones de navegación -->
-    <div style="display: flex; justify-content: space-between; margin: 20px;">
-      <button onclick="window.location.href='dashboard.html'" class="btn-regresar">← Regresar al inicio</button>
-      <button id="siguienteBtn" class="btn-siguiente">Siguiente →</button>
-    </div>
-  </main>
-
+<!-- Botones de navegación -->
+<div style="display: flex; justify-content: space-between; margin: 20px;">
+  <button onclick="window.location.href='dashboard.html'" class="btn-regresar">← Regresar al inicio</button>
+  <button id="siguienteBtn" class="btn-siguiente">Siguiente →</button>
+</div>
 
 <!-- Script para redireccionar -->
 <script>
@@ -156,12 +140,12 @@
 
 
   </main>
-   <footer>
+  <footer>
     © 2025 Great American Hospitality. Todos los derechos reservados.
   </footer>
 
-  <!-- Modal escáner -->
-  <!-- Modal o contenedor para escaneo y recorte -->
+
+ <!-- Modal escáner con estilo copiado de la imagen -->
 <div id="scanner-container" style="display: none;">
   <div class="modal-camera">
     <div class="video-container">
@@ -172,31 +156,37 @@
       <div id="loading-message">Cargando video...</div>
     </div>
     <div class="scanner-buttons">
-      <div id="beforeCapture">
-        <button id="cancelScanBtn" class="btn-cancel">Cancelar</button>
-        <button id="captureBtn" class="btn-capture">📸 Tomar Foto</button>
-      </div>
-      <div id="afterCapture" style="display: none;">
-        <button class="btn-retake" id="retakeBtn">Volver a escanear</button>
-        <button class="btn-accept" id="acceptBtn">Aceptar</button>
-      </div>
-    </div>
-    <div id="preview" style="display: none;">
-      <img id="capturedImage" alt="Documento escaneado" style="max-width: 100%;"/>
-    </div>
+  <!-- Botones antes de capturar -->
+  <div id="beforeCapture">
+    <button id="cancelScanBtn" class="btn-cancel">Cancelar</button>
+    <button id="captureBtn" class="btn-capture">📸 Tomar Foto</button>
+  </div>
+
+  <!-- Botones después de capturar -->
+  <div id="afterCapture" style="display: none;">
+    <button class="btn-retake" id="retakeBtn">Volver a escanear</button>
+    <button class="btn-accept" id="acceptBtn">Aceptar</button>
   </div>
 </div>
 
-  <!-- Scripts -->
-  <script src="//static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
-  <script src="scanner.js"></script>
+<!-- Imagen escaneada -->
+<div id="preview" style="display: none;">
+  <img id="capturedImage" alt="Documento escaneado" />
+</div>
+<canvas id="canvasOutput" style="display: none;"></canvas>
 
-  <script>
-    document.getElementById("siguienteBtn").addEventListener("click", () => {
-      window.location.href = "generar-zip.html";
-    });
-  </script>
-<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
+  
+
+<!-- Contenedor para mostrar imágenes aceptadas -->
+<div id="previewFinal"></div>
+
+  <!-- Scripts -->
+<script src="//static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
+<script src="scanner.js"></script>
+<script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
+<script src="scanner1.js"></script>
+
 
 </body>
 </html>
