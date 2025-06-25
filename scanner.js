@@ -1,56 +1,47 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /* ---------- ELEMENTOS DEL DOM ---------- */
-  const scanButtons      = document.querySelectorAll(".scan-btn");
+  const scanButtons = document.querySelectorAll(".scan-btn");
   const scannerContainer = document.getElementById("scanner-container");
-  const camera           = document.getElementById("camera");
-  const captureBtn       = document.getElementById("captureBtn");
-  const retakeBtn        = document.getElementById("retakeBtn");
-  const acceptBtn        = document.getElementById("acceptBtn");
-  const cancelScanBtn    = document.getElementById("cancelScanBtn");
-  const capturedImage    = document.getElementById("capturedImage");
-  const preview          = document.getElementById("preview");
+  const camera = document.getElementById("camera");
+  const captureBtn = document.getElementById("captureBtn");
+  const retakeBtn = document.getElementById("retakeBtn");
+  const acceptBtn = document.getElementById("acceptBtn");
+  const cancelScanBtn = document.getElementById("cancelScanBtn");
+  const capturedImage = document.getElementById("capturedImage");
+  const preview = document.getElementById("preview");
 
-  const beforeCapture    = document.getElementById("beforeCapture");
-  const afterCapture     = document.getElementById("afterCapture");
+  const beforeCapture = document.getElementById("beforeCapture");
+  const afterCapture = document.getElementById("afterCapture");
 
-  /* ---------- VARIABLES ---------- */
-  let currentStream   = null;
-  let currentDocType  = "";
-  let usandoFrontal   = false;
-
-  const filestackClient = filestack.init("A7II0wXa7TKix1YxL3cCRz"); // tu API key Filestack
-
-  /* ---------- BOTÓN CAMBIAR CÁMARA ---------- */
   const switchCameraBtn = document.createElement("button");
   switchCameraBtn.textContent = "🔁 Cambiar cámara";
-  switchCameraBtn.className   = "btn-capture";
-  switchCameraBtn.addEventListener("click", () => {
-    usandoFrontal = !usandoFrontal;
-    startCamera(usandoFrontal ? "user" : "environment");
-  });
+  switchCameraBtn.className = "btn-capture";
   beforeCapture.insertBefore(switchCameraBtn, captureBtn);
 
-  /* ---------- CARGAR DOCUMENTOS YA GUARDADOS ---------- */
-  const scannedDocs = JSON.parse(localStorage.getItem("scannedDocsGeneral") || "{}");
+  let currentStream = null;
+  let currentDocType = "";
+  let usingBackCamera = true;
 
-  /* ---------- ASIGNAR CLIC A CADA BOTÓN DE DOCUMENTO ---------- */
-  scanButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentDocType = btn.getAttribute("data-doc");
+  const filestackClient = filestack.init("A7II0wXa7TKix1YxL3cCRz");
+
+  // Cargar datos guardados
+  const scannedDocs = JSON.parse(localStorage.getItem("scannedDocsGeneral") || "{}");
+  let trabajadorNombre = localStorage.getItem("trabajadorNombre") || "";
+
+  scanButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      currentDocType = button.getAttribute("data-doc");
       openScanner();
     });
   });
 
-  /* ---------- FUNCIONES PRINCIPALES ---------- */
-
   function openScanner() {
     scannerContainer.style.display = "block";
-    preview.style.display          = "none";
+    preview.style.display = "none";
     document.getElementById("loading-message").style.display = "block";
-    beforeCapture.style.display    = "flex";
-    afterCapture.style.display     = "none";
-    camera.style.display           = "block";
-    startCamera(usandoFrontal ? "user" : "environment");
+    beforeCapture.style.display = "flex";
+    afterCapture.style.display = "none";
+    camera.style.display = "block";
+    startCamera(usingBackCamera ? "environment" : "user");
   }
 
   function startCamera(facingMode) {
@@ -61,85 +52,78 @@ document.addEventListener("DOMContentLoaded", () => {
         camera.srcObject = stream;
         document.getElementById("loading-message").style.display = "none";
       })
-      .catch(err => alert("No se pudo acceder a la cámara: " + err));
+      .catch(error => {
+        alert("No se pudo acceder a la cámara: " + error);
+      });
   }
 
   function stopCamera() {
     if (currentStream) {
-      currentStream.getTracks().forEach(t => t.stop());
+      currentStream.getTracks().forEach(track => track.stop());
       camera.srcObject = null;
     }
   }
 
-  function actualizarTipoDocDetectado(texto) {
-    const docItem = document.querySelector(`.document-item[data-doc="${currentDocType}"]`);
-    if (!docItem) return;
-    const tipoDocElem = docItem.querySelector(".tipo-doc-detectado");
-    if (!tipoDocElem) return;
-    tipoDocElem.textContent = texto;
-  }
-
-  /* ---------- CAPTURAR FOTO ---------- */
   captureBtn.addEventListener("click", () => {
     const canvas = document.createElement("canvas");
-    canvas.width  = camera.videoWidth;
+    canvas.width = camera.videoWidth;
     canvas.height = camera.videoHeight;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
-    const aspectRatio = canvas.width / canvas.height;
+    const dataUrl = canvas.toDataURL("image/jpeg");
 
-    const tipoDetectado = detectDocType(aspectRatio);
-    actualizarTipoDocDetectado(`Tamaño estimado: ${tipoDetectado}`);
-
-    const scanCanvas = document.createElement("canvas");
-    scanCanvas.width  = canvas.width;
-    scanCanvas.height = canvas.height;
-    const sctx = scanCanvas.getContext("2d");
-    sctx.filter = "grayscale(100%) contrast(140%) brightness(115%)";
-    sctx.drawImage(canvas, 0, 0);
-
-    const processedUrl = scanCanvas.toDataURL("image/jpeg", 0.9);
-    capturedImage.src = processedUrl;
-
-    preview.style.display          = "block";
-    camera.style.display           = "none";
-    beforeCapture.style.display    = "none";
-    afterCapture.style.display     = "flex";
+    capturedImage.src = dataUrl;
+    preview.style.display = "block";
+    camera.style.display = "none";
+    beforeCapture.style.display = "none";
+    afterCapture.style.display = "flex";
   });
 
-  /* ---------- VOLVER A TOMAR ---------- */
   retakeBtn.addEventListener("click", () => {
-    preview.style.display       = "none";
-    camera.style.display        = "block";
+    preview.style.display = "none";
+    camera.style.display = "block";
     beforeCapture.style.display = "flex";
-    afterCapture.style.display  = "none";
+    afterCapture.style.display = "none";
   });
 
-  /* ---------- ACEPTAR ---------- */
   acceptBtn.addEventListener("click", async () => {
     const file = await fetch(capturedImage.src)
-      .then(r => r.blob())
-      .then(b => new File([b], `${currentDocType}.jpg`, { type: "image/jpeg" }));
+      .then(res => res.blob())
+      .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
 
-    filestackClient.upload(file).then(async res => {
-      // ✅ Aplicamos transformación adicional (tipo escáner profesional vía CDN)
-      const scannedUrl = `https://cdn.filestackcontent.com/resize=width:1000,fit:max/enhance=contrast:2.0/blackwhite/sharpen/${res.handle}`;
+    filestackClient.upload(file).then(async result => {
+      const fileUrl = result.url;
 
       const img = document.createElement("img");
-      img.src = scannedUrl;
+      img.src = fileUrl;
       img.alt = `Documento: ${currentDocType}`;
       img.classList.add("final-preview-img");
 
       const docItem = document.querySelector(`.document-item[data-doc="${currentDocType}"]`);
       if (docItem) {
-        docItem.querySelector(".doc-preview").innerHTML = "";
-        docItem.querySelector(".doc-preview").appendChild(img);
-        docItem.querySelector(".status-icon").textContent = "✅";
+        const previewContainer = docItem.querySelector(".doc-preview");
+        const statusIcon = docItem.querySelector(".status-icon");
+
+        previewContainer.innerHTML = "";
+        previewContainer.appendChild(img);
+        statusIcon.textContent = "✅";
       }
 
-      scannedDocs[currentDocType] = scannedUrl;
+      // Guardar en localStorage
+      scannedDocs[currentDocType] = fileUrl;
       localStorage.setItem("scannedDocsGeneral", JSON.stringify(scannedDocs));
+
+      // Guardar origen actual
       localStorage.setItem("origen", "documentacion-general.html");
+
+      // Si es INE, ejecutar OCR y guardar nombre
+      if (currentDocType.toLowerCase().includes("ine")) {
+        const nombre = await realizarOCR(result.handle);
+        if (nombre) {
+          trabajadorNombre = nombre;
+          localStorage.setItem("trabajadorNombre", trabajadorNombre);
+        }
+      }
 
       closeScanner();
     }).catch(err => {
@@ -148,23 +132,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* ---------- CANCELAR ---------- */
-  cancelScanBtn.addEventListener("click", closeScanner);
+  cancelScanBtn.addEventListener("click", () => {
+    closeScanner();
+  });
+
+  switchCameraBtn.addEventListener("click", () => {
+    usingBackCamera = !usingBackCamera;
+    startCamera(usingBackCamera ? "environment" : "user");
+  });
 
   function closeScanner() {
     stopCamera();
     scannerContainer.style.display = "none";
-    preview.style.display          = "none";
-    camera.style.display           = "block";
-    beforeCapture.style.display    = "flex";
-    afterCapture.style.display     = "none";
+    preview.style.display = "none";
+    beforeCapture.style.display = "flex";
+    afterCapture.style.display = "none";
+    camera.style.display = "block";
   }
 
-  /* ---------- DETECTAR TIPO DE DOCUMENTO POR ASPECT RATIO ---------- */
-  function detectDocType(r) {
-    if (r >= 0.74 && r <= 0.81)     return "Carta (8.5×11″)";
-    if (r >= 0.60 && r < 0.74)      return "Oficio / Legal (8.5×13″)";
-    if (r >= 1.50 && r <= 1.70)     return "Credencial (INE/ID)";
-    return "Tamaño no estándar";
+  async function realizarOCR(handle) {
+    try {
+      const response = await fetch(`https://cdn.filestackcontent.com/ocr/${handle}`, {
+        headers: {
+          'Filestack-API-Key': 'A31q0qbd1TYip6E7pozsLz'
+        }
+      });
+
+      const data = await response.json();
+      const texto = data.text || "";
+
+      const nombreEncontrado = texto.match(/(?<=NOMBRE\s?)[A-ZÁÉÍÓÚÑ ]{10,}/i);
+      if (nombreEncontrado) {
+        console.log("Nombre detectado:", nombreEncontrado[0].trim());
+        return nombreEncontrado[0].trim();
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error en OCR:", error);
+      return null;
+    }
   }
 });
