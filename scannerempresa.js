@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const filestackClient = filestack.init("A7II0wXa7TKix1YxL3cCRz");
 
+  // Botón para cambiar cámara
   const switchCameraBtn = document.createElement("button");
   switchCameraBtn.textContent = "🔁 Cambiar cámara";
   switchCameraBtn.className = "btn-capture";
@@ -27,9 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   beforeCapture.insertBefore(switchCameraBtn, captureBtn);
 
-  // Cargar documentos previos si los hay
+  // Elemento para mostrar tipo doc detectado
+  let infoTipoDoc = document.getElementById("tipoDocumentoDetectado");
+  if (!infoTipoDoc) {
+    infoTipoDoc = document.createElement("p");
+    infoTipoDoc.id = "tipoDocumentoDetectado";
+    infoTipoDoc.style.marginTop = "0.5rem";
+    infoTipoDoc.style.fontWeight = "600";
+    preview.insertBefore(infoTipoDoc, capturedImage);
+  }
+
+  // Cargar documentos previos
   const scannedDocs = JSON.parse(localStorage.getItem("scannedDocsEmpresa") || "{}");
 
+  // Evento botón escanear
   scanButtons.forEach(button => {
     button.addEventListener("click", () => {
       currentDocType = button.getAttribute("data-doc");
@@ -62,8 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function stopCamera() {
     if (currentStream) {
       currentStream.getTracks().forEach(track => track.stop());
-      camera.srcObject = null;
+      currentStream = null;
     }
+    camera.srcObject = null;
   }
 
   captureBtn.addEventListener("click", () => {
@@ -74,6 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL("image/jpeg");
     capturedImage.src = dataUrl;
+
+    // Estimar tamaño y mostrar
+    const tamañoEstimado = estimarTamañoDocumento(canvas.width, canvas.height);
+    document.getElementById('tipoDocumentoDetectado').textContent = `Tamaño estimado: ${tamañoEstimado}`;
 
     preview.style.display = "block";
     camera.style.display = "none";
@@ -89,15 +106,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   acceptBtn.addEventListener("click", async () => {
-    const file = await fetch(capturedImage.src)
-      .then(res => res.blob())
-      .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
+    try {
+      const file = await fetch(capturedImage.src)
+        .then(res => res.blob())
+        .then(blob => new File([blob], `${currentDocType}.jpg`, { type: "image/jpeg" }));
 
-    filestackClient.upload(file).then(result => {
-      const fileUrl = result.url;
+      const result = await filestackClient.upload(file);
+
+      // URL con transformación automática tipo escáner
+      const scannedUrl = `https://cdn.filestackcontent.com/resize=width:1000,fit:max/enhance=contrast:2.0/blackwhite/sharpen/${result.handle}`;
 
       const img = document.createElement("img");
-      img.src = fileUrl;
+      img.src = scannedUrl;
       img.alt = `Documento: ${currentDocType}`;
       img.classList.add("final-preview-img");
 
@@ -112,17 +132,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Guardar en localStorage
-      scannedDocs[currentDocType] = fileUrl;
+      scannedDocs[currentDocType] = scannedUrl;
       localStorage.setItem("scannedDocsEmpresa", JSON.stringify(scannedDocs));
-
-      // Guardar origen actual
       localStorage.setItem("origen", "documentacion-empresa.html");
 
       closeScanner();
-    }).catch(err => {
+    } catch (err) {
       alert("Error al subir el archivo a Filestack");
       console.error(err);
-    });
+    }
   });
 
   cancelScanBtn.addEventListener("click", () => {
@@ -136,5 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
     camera.style.display = "block";
     beforeCapture.style.display = "flex";
     afterCapture.style.display = "none";
+  }
+
+  function estimarTamañoDocumento(ancho, alto) {
+    const ratio = ancho / alto;
+    if (ratio > 0.7 && ratio < 0.8) return "Carta";
+    if (ratio > 0.6 && ratio < 0.7) return "Oficio";
+    if (ratio > 1.3 && ratio < 1.5) return "Credencial";
+    return "Desconocido";
   }
 });
